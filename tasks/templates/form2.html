@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuevo Objeto</title>
+
+  
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: #ffffff;
+      margin: 0;
+    }
+  
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgb(85, 85, 161);
+      padding: 10px 20px;
+      color: white;
+      width: 100%;
+    }
+    .logo {
+      padding-left: 3vh;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+    .hamburger {
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+    }
+    .nav-links li {
+      margin: 0 10px;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 12px;
+      font-size: 18px; 
+      transition: 0.3s;
+    }
+    .nav-links a:hover {
+      background: #334072;
+      border-radius: 5px;
+    }
+    @media screen and (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #3e3e3e;
+        width: 100%;
+        text-align: center;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .nav-links li {
+        padding: 10px 0;
+      }
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgb(85, 85, 161);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      margin-top: 30px;
+    }
+    .form-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+    .form-wrapper h2 {
+      margin-bottom: 20px;
+    }
+    form {
+      width: 100%;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      width: 100%;
+      color: white;
+    }
+    label {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      display: block;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #6f6d6d;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #334072;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .register-link {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .kaleb {
+      color: white;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  
+  <nav class="navbar">
+    <a href="{% url 'home' %}" class="logo">Intelisis Solutions</a>
+    <button class="hamburger" id="menu-toggle">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="{% url 'inicio' %}">Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+
+  
+  <div class="container">
+    <div class="form-wrapper">
+      <h2>Ingresar nuevo objeto</h2>
+      <form method="post">
+        {% csrf_token %}
+
+      
+        {{ form.as_p }}
+
+        
+        <div class="form-group">
+          <label>Dependencias</label>
+          {{ formset.management_form }}
+
+          <div id="formset-container">
+            {% for f in formset %}
+              <div class="form-group formset-row" style="margin-bottom: 10px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <div style="flex: 1;">{{ f.objeto }}</div>
+                  <div style="flex: 1;">{{ f.tipo }}</div>
+                  {% if formset.can_delete and es_actualizacion %}
+                    <div>
+                      <label>Eliminar</label>
+                      {{ f.DELETE }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <button type="button" id="add-dependencia" style="margin-top: 10px; background-color: #6c757d;">Agregar dependencia</button>
+        </div>
+
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="error">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('.select2').select2({
+        placeholder: "Selecciona referencias...",
+        width: '100%'
+      });
+
+      $('#menu-toggle').on('click', function () {
+        $('#nav-links').toggleClass('active');
+      });
+
+      
+      $('#add-dependencia').on('click', function () {
+        let totalForms = $('#id_form-TOTAL_FORMS');
+        let formCount = parseInt(totalForms.val());
+
+        
+        let newForm = $('.formset-row:last').clone(false);
+
+        
+        newForm.find('select').val(null).trigger('change');
+        newForm.find('input').val('');
+        
+        
+        newForm.find(':input').each(function () {
+          let name = $(this).attr('name');
+          if (name) {
+            let newName = name.replace(/\-\d+\-/, `-${formCount}-`);
+            let newId = 'id_' + newName;
+            $(this).attr({'name': newName, 'id': newId});
+          }
+        });
+
+        
+        newForm.insertAfter('.formset-row:last');
+
+        
+        totalForms.val(formCount + 1);
+
+        
+        newForm.find('.select2').select2({
+          placeholder: "Selecciona referencias...",
+          width: '100%'
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

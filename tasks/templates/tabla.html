@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Document</title>
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" 
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
+
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  
+  <link rel="stylesheet" href="{% static 'css/hola.css' %}" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    div.dataTables_filter {
+      display: none !important;
+    }
+
+    .datatables_lengh label {
+      font-family: Arial, sans-serif;
+    }
+
+    .centered {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .dataTables_scrollBody {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgb(85, 85, 161);
+      padding: 10px 20px;
+      color: white;
+    }
+
+    .logo {
+      padding-left: 3vh;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+    }
+
+    .nav-links li {
+      margin: 0 10px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 12px;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      background: #334072;
+      border-radius: 5px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #3e3e3e;
+        width: 100%;
+        text-align: center;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .nav-links li {
+        padding: 10px 0;
+      }
+    }
+
+    .boton-personalizado {
+      background-color: rgb(85, 85, 161);
+      color: white;
+      border: none;
+      width: 10rem;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .boton-personalizado:hover {
+      background-color: rgb(70, 70, 130);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Intelisis Solutions</div>
+    <button class="hamburger" id="menu-toggle">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="{% url 'inicio' %}">Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-end mb-2">
+          <a href="{% url 'nuevo_objeto' %}" role="button" aria-label="Crear nuevo objeto"
+            class="boton-personalizado text-decoration-none d-flex justify-content-center align-items-center">
+            <i class="bi bi-plus-circle me-2"></i> Nuevo
+          </a>
+        </div>
+
+        <table id="datatable" class="table table-striped" style="width:100%;">
+          <thead>
+            <tr>
+              <th class="centered">#</th>
+              <th class="centered">Nombre</th>
+              <th class="centered">Tipo Objeto</th>
+              <th class="centered">Estatus</th>
+              <th class="centered">Descripción</th>
+              <th class="centered">Dependencias</th>
+              <th class="centered">Editar</th>
+            </tr>
+            <tr>
+              <th class="centered"></th>
+              <th class="centered"></th>
+              <th class="centered"></th>
+              <th class="centered"></th>
+              <th class="centered"></th>
+              <th class="centered"></th>
+              <th class="centered"></th>
+            </tr>
+          </thead>
+          <tbody id="tablaid">
+            
+          </tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="relacionesModal" tabindex="-1" aria-labelledby="relacionesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="relacionesModalLabel">Relaciones del Objeto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="contenidoRelaciones">Cargando...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+
+  
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+
+  
+  <script src="{% static 'js/estilo.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<body class="hola">
+    <div class="container">
+      <div class="form-wrapper">
+        <center><h2>Iniciar Sesión</h2></center>
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usuario">Usuario:</label>
+            <input type="text" id="usuario" name="usuario" required>
+          </div>
+  
+          <div class="form-group">
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+  
+          <div class="form-group">
+            <button type="submit" class="button" id="loginBtn">Iniciar Sesión</button>
+          </div>
+        </form>
+      </div>
+  
+      <div class="register-link">
+       
+        <a  class="kaleb" href="{% url 'registro' %}">
+          Registro
+        </a>
+        
+      </div>
+    </div>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="error">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+  </body>
+  <style>
+  .hola {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #ffffff;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color:  rgb(85, 85, 161);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(251, 251, 251, 0.266);
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: rgb(255, 255, 255);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+    color: rgb(255, 255, 255);
+}
+
+label {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #6f6d6d;
+    border-radius: 5px;
+}
+
+.button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #334072;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.register-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.kaleb{
+    color: rgb(255, 255, 255);
+
+}
+  
+  </style>
